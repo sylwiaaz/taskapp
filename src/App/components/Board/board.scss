@@ -3,6 +3,7 @@
 
 .add-column {
   @include remove-btn;
+  flex-shrink: 0;
   margin-left: 10px;
   width: 280px;
   padding: 10px 10px;
@@ -30,7 +31,9 @@
 .board {
   flex-grow: 1;
   background-color: $board-bg-color;
-  padding: 30px;
+  padding: 60px;
+  overflow-x: auto;
+  width: auto;
 }
 
 .column-container {
