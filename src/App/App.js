@@ -1,12 +1,12 @@
-import React from 'react';
-import './App.css';
-import Aside from './components/Aside/Aside';
-import Board from './components/Board/Board'
+import React from "react";
+import "./App.css";
+import SideBarContainer from "./components/Sidebar/SidebarContainer";
+import Board from "./components/Board/Board";
 
 function App() {
   return (
     <div className="App">
-      <Aside />
+      <SideBarContainer />
       <Board />
     </div>
   );
