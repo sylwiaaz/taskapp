@@ -18,3 +18,9 @@ code {
   box-sizing: border-box;
   font-family: "Open Sans", sans-serif;
 }
+
+.body {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
