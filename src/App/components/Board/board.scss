@@ -1,0 +1,40 @@
+@import "../../style/variables.scss";
+@import "../../style/mixins.scss";
+
+.add-column {
+  @include remove-btn;
+  margin-left: 10px;
+  width: 280px;
+  padding: 10px 10px;
+  height: 100%;
+  font-size: 20px;
+  border: none;
+  outline: 0;
+  display: block;
+  color: gray;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  background-color: rgb(245, 245, 245);
+
+  .plus-icon {
+    @include icon(20px, 0.9);
+    margin: 10px 15px 10px 10px;
+  }
+}
+
+.add-column:hover {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.board {
+  flex-grow: 1;
+  background-color: $board-bg-color;
+  padding: 30px;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}

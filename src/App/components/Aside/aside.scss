@@ -1,0 +1,33 @@
+@import "../../style/variables.scss";
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  width: 250px;
+  padding: 20px;
+  text-align: center;
+  background-color: $aside-bg-color;
+}
+
+.contact-list h3 {
+  margin-bottom: 10px;
+}
+
+.contact-list li {
+  list-style-type: none;
+  display: flex;
+  text-align: start;
+  margin: 20px 0;
+  line-height: 25px;
+}
+
+.user-icon {
+  width: 25px;
+  height: 25px;
+  margin-right: 15px;
+}
+
+.user-name {
+  font-size: 14px;
+}

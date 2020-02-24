@@ -1,0 +1,14 @@
+@mixin remove-btn {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: transparent;
+  outline: 0;
+  border: none;
+  transition: 0.2s ease-in-out;
+}
+
+@mixin icon($size, $opacity) {
+  opacity: $opacity;
+  width: $size;
+  height: $size;
+}
