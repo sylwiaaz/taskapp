@@ -1,14 +1,17 @@
-let nextColumnId = 2;
-let nextNoteId = 4;
 const initialState = [
   {
     id: "column-0",
     name: "Done",
     notes: [
-      { id: "note-0", content: "some content", likes: [] },
+      {
+        id: "note-0",
+        content: "quo temporibus omnis distinctio, laboriosam totam.",
+        likes: []
+      },
       {
         id: "note-1",
-        content: "some content lorem ipsum igfkeugbf",
+        content:
+          "Labore recusandae nulla nesciunt esse, consequuntur fuga reiciendis consectetur.",
         likes: []
       }
     ]
@@ -27,10 +30,23 @@ const initialState = [
         content:
           "Perspiciatis veniam eligendi placeat doloremque autem iusto amet eius officiis rerum neque",
         likes: []
+      },
+      {
+        id: "note-4",
+        content: "Labore quis incidunt tempore hic ut. Fugit.",
+        likes: []
       }
     ]
   }
 ];
+
+let nextNoteId = initialState
+  .map(column => column.notes.length)
+  .reduce((prevVal, curentVal) => {
+    return prevVal + curentVal;
+  });
+
+let nextColumnId = initialState.length;
 
 const addNewColumn = (state, action) => {
   const newColumn = {
@@ -109,6 +125,16 @@ const dragHandle = (state, action) => {
   return newState;
 };
 
+const editColumnName = (state, action) => {
+  const { columnId, columnName } = action.payload;
+  return state.map(column => {
+    if (column.id === columnId && column.name !== columnName) {
+      return { ...column, name: columnName };
+    }
+    return { ...column };
+  });
+};
+
 const likeHandle = (state, action) => {
   const { noteId, likeAuthor } = action.payload;
   return state.map(column => {
@@ -129,23 +155,43 @@ const likeHandle = (state, action) => {
   });
 };
 
-const columnReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "ADD_COLUMN":
-      return addNewColumn(state, action);
-    case "REMOVE_COLUMN":
-      return removeColumn(state, action);
-    case "DRAG_HAPPENED":
-      return dragHandle(state, action);
-    case "ADD_NOTE":
-      return addNewNote(state, action);
-    case "REMOVE_NOTE":
-      return removeNote(state, action);
-    case "HANDLE_LIKE":
-      return likeHandle(state, action);
-    default:
-      return state;
-  }
+const editNoteContent = (state, action) => {
+  const { columnId, noteId, content } = action.payload;
+  return state.map(column => {
+    if (column.id === columnId) {
+      return {
+        ...column,
+        notes: column.notes.map(note => {
+          if (note.id === noteId && note.content !== content) {
+            return { ...note, content };
+          }
+          return note;
+        })
+      };
+    }
+    return column;
+  });
 };
+
+const createReducer = (initialState, handlers) => {
+  return function reducer(state = initialState, action) {
+    if (handlers.hasOwnProperty(action.type)) {
+      return handlers[action.type](state, action);
+    } else {
+      return state;
+    }
+  };
+};
+
+const columnReducer = createReducer(initialState, {
+  ADD_COLUMN: addNewColumn,
+  REMOVE_COLUMN: removeColumn,
+  EDIT_COLUMN_NAME: editColumnName,
+  DRAG_HAPPENED: dragHandle,
+  ADD_NOTE: addNewNote,
+  REMOVE_NOTE: removeNote,
+  EDIT_NOTE_CONTENT: editNoteContent,
+  HANDLE_LIKE: likeHandle
+});
 
 export default columnReducer;
