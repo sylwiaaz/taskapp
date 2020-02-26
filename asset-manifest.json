@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/react-retro-copy/static/css/main.4a6a5dd5.chunk.css",
-    "main.js": "/react-retro-copy/static/js/main.72064a62.chunk.js",
-    "main.js.map": "/react-retro-copy/static/js/main.72064a62.chunk.js.map",
+    "main.js": "/react-retro-copy/static/js/main.a1cf9061.chunk.js",
+    "main.js.map": "/react-retro-copy/static/js/main.a1cf9061.chunk.js.map",
     "runtime-main.js": "/react-retro-copy/static/js/runtime-main.38ca7f61.js",
     "runtime-main.js.map": "/react-retro-copy/static/js/runtime-main.38ca7f61.js.map",
     "static/js/2.23a134da.chunk.js": "/react-retro-copy/static/js/2.23a134da.chunk.js",
     "static/js/2.23a134da.chunk.js.map": "/react-retro-copy/static/js/2.23a134da.chunk.js.map",
     "index.html": "/react-retro-copy/index.html",
-    "precache-manifest.93b6e31addde0971fef7e72e35cad200.js": "/react-retro-copy/precache-manifest.93b6e31addde0971fef7e72e35cad200.js",
+    "precache-manifest.cea1b20c2849de687652ef73bbb55de2.js": "/react-retro-copy/precache-manifest.cea1b20c2849de687652ef73bbb55de2.js",
     "service-worker.js": "/react-retro-copy/service-worker.js",
     "static/css/main.4a6a5dd5.chunk.css.map": "/react-retro-copy/static/css/main.4a6a5dd5.chunk.css.map",
     "static/js/2.23a134da.chunk.js.LICENSE.txt": "/react-retro-copy/static/js/2.23a134da.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.38ca7f61.js",
     "static/js/2.23a134da.chunk.js",
     "static/css/main.4a6a5dd5.chunk.css",
-    "static/js/main.72064a62.chunk.js"
+    "static/js/main.a1cf9061.chunk.js"
   ]
 }
