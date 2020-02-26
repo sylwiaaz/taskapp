@@ -1,62 +1,84 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { removeNote, handleLike } from "../../../store/actions/index";
+import {
+  removeNote,
+  handleLike,
+  editNoteContent
+} from "../../../store/actions/index";
 import { connect } from "react-redux";
 import { Draggable } from "react-beautiful-dnd";
 import { AiFillLike } from "react-icons/ai";
 import { MdClose } from "react-icons/md";
 import "./note.scss";
+import Textarea from "../../Buttons/Textarea";
 
-class Note extends React.Component {
-  state = {
-    isLikedNote: false
-  };
+const Note = ({ id, dispatch, columnId, content, index, likes }) => {
+  const [isLikedNote, setLikedNote] = useState(false);
+  const [value, setValue] = useState(content);
+  const [openInput, setOpenInput] = useState(false);
 
-  handleRemoveNote = () => {
-    const { id, dispatch, columnId } = this.props;
+  const handleRemoveNote = () => {
     dispatch(removeNote(id, columnId));
   };
 
-  handleAddLike = () => {
-    const { id, dispatch } = this.props;
+  const handleAddLike = () => {
     dispatch(handleLike(id, "user1"));
-    this.setState(prevState => ({
-      isLikedNote: !prevState.isLikedNote
-    }));
+    setLikedNote(!isLikedNote);
   };
-  render() {
-    const { id, content, index, likes } = this.props;
-    return (
-      <Draggable draggableId={id} index={index}>
-        {provided => (
-          <div
-            className="note"
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            <p className="note-content">{content}</p>
-            <div className="buttons">
-              <button onClick={this.handleRemoveNote} className="remove-btn">
-                <MdClose className="icon" />
-              </button>
-              <button onClick={this.handleAddLike} className={"like-btn"}>
-                {likes.length ? (
-                  <span className="likes-amount">{likes.length}</span>
-                ) : null}
-                <AiFillLike
-                  className={
-                    this.state.isLikedNote ? "icon liked-icon" : "icon"
-                  }
-                />
-              </button>
-            </div>
+
+  const handleClick = () => {
+    setOpenInput(true);
+  };
+
+  const handleOnChange = e => {
+    setValue(e.target.value);
+  };
+
+  const handleBlur = e => {
+    setOpenInput(false);
+    if (value) {
+      dispatch(editNoteContent(columnId, id, value));
+    }
+  };
+
+  return (
+    <Draggable draggableId={id} index={index}>
+      {provided => (
+        <div
+          className="note"
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
+          {openInput ? (
+            <Textarea
+              onBlur={handleBlur}
+              value={value}
+              onChange={handleOnChange}
+            />
+          ) : (
+            <p className="note-content" onClick={handleClick}>
+              {content}
+            </p>
+          )}
+          <div className="buttons">
+            <button onClick={handleRemoveNote} className="remove-btn">
+              <MdClose className="icon" />
+            </button>
+            <button onClick={handleAddLike} className={"like-btn"}>
+              {likes.length ? (
+                <span className="likes-amount">{likes.length}</span>
+              ) : null}
+              <AiFillLike
+                className={isLikedNote ? "icon liked-icon" : "icon"}
+              />
+            </button>
           </div>
-        )}
-      </Draggable>
-    );
-  }
-}
+        </div>
+      )}
+    </Draggable>
+  );
+};
 
 Note.propTypes = {
   id: PropTypes.string.isRequired,
