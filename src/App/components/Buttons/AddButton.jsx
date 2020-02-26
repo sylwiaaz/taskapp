@@ -1,10 +1,10 @@
 import React from "react";
 import { PropTypes } from "prop-types";
-import TextareaAutosize from "react-textarea-autosize";
 import "./buttons.scss";
 import { connect } from "react-redux";
 import { addColumn, addNote } from "../../store/actions/index";
 import { FaPlus } from "react-icons/fa";
+import Textarea from "./Textarea";
 
 class AddButton extends React.Component {
   state = {
@@ -62,8 +62,7 @@ class AddButton extends React.Component {
     const formStyle = column ? "column-form" : "note-form";
     return (
       <div className={formStyle}>
-        <TextareaAutosize
-          autoFocus
+        <Textarea
           placeholder={placeholder}
           onBlur={this.closeForm}
           value={this.state.value}
