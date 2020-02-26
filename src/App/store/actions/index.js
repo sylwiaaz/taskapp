@@ -1,8 +1,22 @@
-import addColumn from "./addColumnAction";
-import addNote from "./addNoteAction";
-import removeColumn from "./removeColumnAction";
-import removeNote from "./removeNoteAction";
 import sort from "./sortAction";
-import handleLike from "./likeAction";
+import { addColumn, editColumnName, removeColumn } from "./columnActions";
+import {
+  addNote,
+  removeNote,
+  handleLike,
+  editNoteContent
+} from "./noteActions";
+import { hideSidebar, showSidebar } from "./sidebarActions";
 
-export { addColumn, addNote, removeColumn, removeNote, sort, handleLike };
+export {
+  addColumn,
+  addNote,
+  removeColumn,
+  removeNote,
+  sort,
+  handleLike,
+  editColumnName,
+  editNoteContent,
+  hideSidebar,
+  showSidebar
+};
