@@ -3,7 +3,7 @@ import UserList from "./UserList/UserList";
 import "./sidebar.scss";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 import { connect } from "react-redux";
-import { hideSidebar, showSidebar } from "../../store/actions/sidebarAction";
+import { hideSidebar, showSidebar } from "../../store/actions/index";
 
 const SidebarContainer = ({ isOpenSidebar, dispatch }) => {
   const handleToggleSidebar = () => {
@@ -26,7 +26,7 @@ const SidebarContainer = ({ isOpenSidebar, dispatch }) => {
 
 const mapStateToProps = state => {
   return {
-    isOpenSidebar: state.openSidebar.isOpenSidebar
+    isOpenSidebar: state.sidebar.isOpenSidebar
   };
 };
 
