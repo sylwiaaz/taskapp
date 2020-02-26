@@ -2,15 +2,35 @@ import React from "react";
 import PropTypes from "prop-types";
 import Note from "../Note/Note";
 import AddButton from "../../Buttons/addButton";
-import { removeColumn } from "../../../store/actions/index";
+import { removeColumn, editColumnName } from "../../../store/actions/index";
 import { connect } from "react-redux";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import "./column.scss";
 import { FaTrashAlt } from "react-icons/fa";
+import Textarea from "../../Buttons/Textarea";
 
 const Column = ({ name, id, notes, dispatch, index }) => {
+  const [value, setValue] = React.useState("");
+  const [openInput, setOpenInput] = React.useState(false);
+
   const handleRemoveColumn = () => {
     dispatch(removeColumn(id));
+  };
+
+  const handleClick = () => {
+    setOpenInput(true);
+  };
+
+  const handleOnChange = e => {
+    setValue(e.target.value);
+  };
+
+  const handleBlur = e => {
+    setOpenInput(false);
+    if (value) {
+      dispatch(editColumnName(id, value));
+    }
+    setValue("");
   };
 
   return (
@@ -22,7 +42,18 @@ const Column = ({ name, id, notes, dispatch, index }) => {
           ref={provided.innerRef}
           {...provided.dragHandleProps}
         >
-          <h4 className="column-name">{name}</h4>
+          {openInput ? (
+            <Textarea
+              value={value}
+              onChange={handleOnChange}
+              onBlur={handleBlur}
+            />
+          ) : (
+            <h4 className="column-name" onClick={handleClick}>
+              {name}
+            </h4>
+          )}
+
           <button className="remove-btn col" onClick={handleRemoveColumn}>
             <FaTrashAlt className="trash-icon" />
           </button>
