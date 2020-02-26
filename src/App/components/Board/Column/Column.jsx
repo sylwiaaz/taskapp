@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Note from "../Note/Note";
-import AddButton from "../../Buttons/addButton";
+import AddButton from "../../Buttons/AddButton";
 import { removeColumn, editColumnName } from "../../../store/actions/index";
 import { connect } from "react-redux";
 import { Droppable, Draggable } from "react-beautiful-dnd";

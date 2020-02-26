@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import "./board.scss";
 import Column from "./Column/Column";
 import { connect } from "react-redux";
-import AddButton from "../Buttons/addButton";
+import AddButton from "../Buttons/AddButton";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { sort } from "../../store/actions/index";
 
@@ -42,6 +42,15 @@ class Board extends React.Component {
                 {columnList}
                 {provided.placeholder}
                 <AddButton column btnStyle="add-column" />
+                <div
+                  style={{
+                    marginLeft: "40px",
+                    width: "30px",
+                    opacity: 0
+                  }}
+                >
+                  null
+                </div>
               </div>
             )}
           </Droppable>
