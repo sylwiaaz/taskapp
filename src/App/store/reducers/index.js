@@ -4,5 +4,5 @@ import sidebarReducer from "./sidebarReducer";
 
 export default combineReducers({
   columns: columnReducer,
-  openSidebar: sidebarReducer
+  sidebar: sidebarReducer
 });
