@@ -1,0 +1,32 @@
+@import "styles/variables";
+@import "styles/mixins";
+
+.note-form {
+  background-color: transparent;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+textarea {
+  resize: none;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  overflow: hidden;
+  outline: none;
+  border: $border-thin;
+  background-color: transparent;
+  min-height: 50px;
+  margin-bottom: 8px;
+}
+
+.add-btn {
+  @include remove-btn;
+  border: $border-thin;
+  padding: 10px;
+  background-color: $column-title-color;
+}
+
+.add-btn:hover {
+  background-color: rgb(216, 133, 55);
+}
