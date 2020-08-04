@@ -20,7 +20,7 @@ export const App: FunctionComponent = (): JSX.Element => {
 
    return (
        <div className="App">
-          <HashRouter basename='/taskapp'>
+          <HashRouter basename='/'>
              <AuthIsLoaded>
                 <Layout>
                    <Switch>
