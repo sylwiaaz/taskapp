@@ -1,5 +1,5 @@
-@import "styles/variables";
-@import 'styles/mixins';
+@import "src/styles/variables";
+@import "src/styles/mixins";
 
 .boards-container {
   width: 100%;
@@ -19,9 +19,8 @@
   flex-shrink: 1;
   max-width: 500px;
   width: 100%;
-  min-height: 300px;
   padding: 20px 25px;
-  background-color: bisque;
+  background-color: $light-blue;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -30,9 +29,13 @@
   box-shadow: $box-shadow;
 }
 
+.no-boards {
+  padding: 20px 0;
+}
+
 .board-item {
   width: 100%;
-  height: 50px;
+  height: 60px;
   border-bottom: 1px solid rgba(40, 40, 40, 0.25);
   display: flex;
   justify-content: space-between;
@@ -40,15 +43,21 @@
 }
 
 .remove-btn {
-  @include remove-btn;
+  @include btn;
   display: flex;
   align-items: center;
+
+  &:hover {
+    background-color: rgba(113, 112, 112, 0.16);
+  }
 }
 
 .add-board {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
   width: 100%;
+  margin-top: 30px;
 
   .add-field {
     padding: 10px;
@@ -59,16 +68,19 @@
     overflow: hidden;
     border: $border-thin;
     min-height: 50px;
+    font-size: 15px;
   }
 
   .add-btn {
     border-radius: 5px;
-    @include remove-btn;
-    background-color: rgba(128, 128, 128, 0.64);
-    padding: 10px 15px;
+    @include btn;
+    background-color: $blue;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 15px;
   }
 
   .add-btn:hover {
-    background-color: #ffba49;
+    background-color: $blue-dark;
   }
 }

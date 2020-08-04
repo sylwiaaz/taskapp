@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, Redirect, Route } from 'react-router-dom';
 
-
 interface IProps {
    component: (props: RouteComponentProps) => JSX.Element | null,
    path: string,
@@ -10,9 +9,8 @@ interface IProps {
 }
 
 const ProtectedRoute: FunctionComponent<IProps> = ({ component: Component, isAuth, ...rest }) => {
-
    return (
-      <Route {...rest} render={(props) => isAuth ? <Component {...props}/> : <Redirect to='/login'/>}/>
+       <Route {...rest} render={(props: RouteComponentProps) => isAuth ? <Component {...props}/> : <Redirect to='/login'/>}/>
    );
 };
 

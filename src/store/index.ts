@@ -1,24 +1,25 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import { boardReducer } from './reducers/boardReducer';
-import sidebarReducer from './reducers/sidebarReducer';
+import { Action, combineReducers, configureStore, getDefaultMiddleware, ThunkAction } from '@reduxjs/toolkit';
+import { boardReducer, columnsReducer, notesReducer } from './reducers/boardReducer';
 import authReducer from './reducers/authReducer';
-import { firebaseReducer, getFirebase } from 'react-redux-firebase';
+import { firebaseReducer } from 'react-redux-firebase';
 import { firestoreReducer } from 'redux-firestore';
-import thunk from 'redux-thunk';
 
-export const store = configureStore({
-   reducer: {
-      board: boardReducer,
-      auth: authReducer,
-      sidebar: sidebarReducer,
-      firebase: firebaseReducer,
-      firestore: firestoreReducer
-   },
-   middleware: [...getDefaultMiddleware({ serializableCheck: false }), thunk.withExtraArgument(getFirebase)]
+const reducers = combineReducers({
+   boards: boardReducer,
+   columns: columnsReducer,
+   notes: notesReducer,
+   auth: authReducer,
+   firebase: firebaseReducer,
+   firestore: firestoreReducer
+})
+
+const store = configureStore({
+   reducer: reducers,
+   middleware: [...getDefaultMiddleware({ serializableCheck: false })]
 });
 
 export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch;
+export type AppThunk = ThunkAction<void, RootState, any, Action>;
 
-store.subscribe(() => {
-   // console.log(store.getState());
-});
+export { store };

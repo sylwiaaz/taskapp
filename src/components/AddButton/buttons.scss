@@ -1,5 +1,5 @@
-@import "styles/variables";
-@import "styles/mixins";
+@import "src/styles/variables";
+@import "src/styles/mixins";
 
 .note-form {
   background-color: transparent;
@@ -21,10 +21,10 @@ textarea {
 }
 
 .add-btn {
-  @include remove-btn;
+  @include btn;
   border: $border-thin;
   padding: 10px;
-  background-color: $column-title-color;
+  background-color: $orange;
 }
 
 .add-btn:hover {

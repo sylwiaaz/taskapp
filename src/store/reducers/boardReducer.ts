@@ -1,237 +1,233 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-   SortType
-} from 'store/actions/boardActions';
+   IBoard,
+   IColumn,
+   IAddBoardAction,
+   IAddColumnAction,
+   IAddNoteAction,
+   IEditColumnNameAction,
+   IEditNoteContentAction,
+   IHandleLikeAction,
+   ILoadBoardsAction,
+   ILoadColumnsAndNotes,
+   IRemoveBoardAction, IRemoveColumnAction,
+   IRemoveNoteAction,
+   IReorderColumnsAction, IReorderNotes,
+   INote
+} from 'interfaces';
 
-export type ColumnType = {
-   id: string,
-   name: string,
-   notes: NoteType[]
-}
 
-export type NoteType = {
-   id: string,
-   content: string,
-   likes: string[]
-}
+const initialState: any[] = [];
 
-// const initialState: ColumnType[] = [
-//    {
-//       id: 'column-0',
-//       name: 'Done',
-//       notes: [
-//          {
-//             id: 'note-0',
-//             content: 'quo temporibus omnis distinctio, laboriosam totam.',
-//             likes: []
-//          },
-//          {
-//             id: 'note-1',
-//             content:
-//                'Labore recusandae nulla nesciunt esse, consequuntur fuga reiciendis consectetur.',
-//             likes: []
-//          }
-//       ]
-//    },
-//    {
-//       id: 'column-1',
-//       name: 'ToDo',
-//       notes: [
-//          {
-//             id: 'note-2',
-//             content: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit.',
-//             likes: []
-//          },
-//          {
-//             id: 'note-3',
-//             content:
-//                'Perspiciatis veniam eligendi placeat doloremque autem iusto amet eius officiis rerum neque',
-//             likes: []
-//          },
-//          {
-//             id: 'note-4',
-//             content: 'Labore quis incidunt tempore hic ut. Fugit.',
-//             likes: []
-//          }
-//       ]
-//    }
-// ];
 
-const initialState: any = [];
-
-let nextNoteId = 0;
-let nextColumnId = 0;
-
-const loadBoards = (state: any, action: any) => {
-   const {boards} = action.payload;
+// BOARDS
+const loadBoards = (state: IBoard[], action: ILoadBoardsAction) => {
+   const { boards } = action.payload;
    return boards;
 };
 
-
-const addBoard = (state: any, action: any) => {
-   const { board } = action.payload;
-   return [...state, board]
+const addBoard = (state: IBoard[], action: IAddBoardAction) => {
+   return [...state, { ...action.payload }]
 };
 
-const removeBoard = (state: any, action: any) => {
-   const {board} = action.payload;
-   return state.filter((boardItem:any) => boardItem.id !== action.payload.board.id)
+const removeBoard = (state: IBoard[], action: IRemoveBoardAction) => {
+   const { boardID } = action.payload;
+   return state.filter((boardItem: any) => boardItem.id !== boardID)
 }
 
-const loadBoard = (state: any, action: any) => {
-   const {board} = action.payload;
-   console.log(board);
-   return board;
-};
+// const loadBoard = (state: Board[], action: any) => {
+//     const { board } = action.payload;
+//     return board;
+// };
 
-const addNewColumn = (state: ColumnType[], action: any) => {
-   const newColumn = {
-      name: action.payload,
-      notes: [],
-      id: `column-${nextColumnId}`
-   };
-   nextColumnId++;
-   return [...state, newColumn];
-};
+const addColumnWithinBoard = (state: IBoard[], action: IAddColumnAction) => {
+   const { id, boardID } = action.payload.column;
 
-const removeColumn = (state: ColumnType[], action: any) => {
-   return state.filter((column: ColumnType) => column.id !== action.payload.columnId);
-};
-
-const addNewNote = (state: ColumnType[], action: any) => {
-   const newNote = {
-      content: action.payload.content,
-      id: `note-${nextNoteId}`,
-      likes: []
-   };
-   nextNoteId++;
-   return state.map((column: ColumnType) => {
-      if (column.id === action.payload.columnId) {
-         return {
-            ...column,
-            notes: [...column.notes, newNote]
-         };
+   return state.map((board: IBoard) => {
+      if (board.id === boardID) {
+         return { ...board, columnsByID: [...board.columnsByID, id] }
       } else {
-         return column;
+         return board;
       }
-   });
+   })
 };
 
-const removeNote = (state: ColumnType[], action: any) => {
-   const { columnId, noteId } = action.payload;
-   return state.map((column: ColumnType) => {
-      if (column.id === columnId) {
-         const newNotesArray = column.notes.filter(note => note.id !== noteId);
-         return { ...column, notes: newNotesArray };
+const removeColumnWithinBoard = (state: IBoard[], action: IRemoveColumnAction) => {
+   const { columnID, boardID } = action.payload;
+
+   return state.map((board: IBoard) => {
+      if (board.id === boardID) {
+         return { ...board, columnsByID: board.columnsByID.filter((columnId: string) => columnID !== columnId) }
+      }
+      return board;
+   })
+};
+
+const reorderColumns = (state: IBoard[], action: IReorderColumnsAction) => {
+   const { boardID, sourceIndex, destinationIndex } = action.payload;
+   return state.map((board: IBoard) => {
+      if (board.id === boardID) {
+         let newColumnList = [...board.columnsByID];
+         const column = newColumnList.splice(sourceIndex, 1);
+         newColumnList.splice(destinationIndex, 0, ...column);
+         return { ...board, columnsByID: newColumnList };
       } else {
-         return column;
+         return board;
       }
-   });
+   })
 };
 
-const dragHandle = (state: ColumnType[], action: SortType) => {
-   const {
-      droppableIdStart,
-      droppableIdEnd,
-      droppableIndexStart,
-      droppableIndexEnd,
-      type
-   } = action.payload;
-   let newState = [...state];
 
-   if (type === 'list') {
-      // drag and drop columns
-      const column = newState.splice(droppableIndexStart, 1);
-      newState.splice(droppableIndexEnd, 0, ...column);
-      return newState;
-   }
-
-   if (droppableIdStart === droppableIdEnd) {
-      // drag and drop note in same column
-      const column = newState.find(column => column.id === droppableIdStart);
-      if (!column) return;
-      const note = column.notes.splice(droppableIndexStart, 1);
-      column.notes.splice(droppableIndexEnd, 0, ...note);
-
-   }
-
-   if (droppableIdStart !== droppableIdEnd) {
-      // drag and drop note between different columns
-      const columnStart = newState.find(column => column.id === droppableIdStart);
-      if (!columnStart) return;
-      const note = columnStart.notes.splice(droppableIndexStart, 1);
-      const columnEnd = newState.find(column => column.id === droppableIdEnd);
-      if (!columnEnd) return;
-      columnEnd.notes.splice(droppableIndexEnd, 0, ...note);
-   }
+// COLUMNS
+const loadColumns = (state: IColumn[], action: ILoadColumnsAndNotes) => {
+   const { columns } = action.payload;
+   return columns;
 };
 
-const editColumnName = (state: ColumnType[], action: any) => {
-   const { columnId, columnName } = action.payload;
-   return state.map((column: ColumnType) => {
-      if (column.id === columnId && column.name !== columnName) {
+const addNewColumn = (state: IColumn[], action: IAddColumnAction) => {
+   return [...state, action.payload.column];
+};
+
+const removeColumn = (state: IColumn[], action: IRemoveColumnAction) => {
+   return state.filter((column: IColumn) => column.id !== action.payload.columnID);
+};
+
+const editColumnName = (state: IColumn[], action: IEditColumnNameAction) => {
+   const { columnID, columnName } = action.payload;
+   return state.map((column: IColumn) => {
+      if (column.id === columnID && column.name !== columnName) {
          return { ...column, name: columnName };
       }
       return { ...column };
    });
 };
 
-const likeHandle = (state: ColumnType[], action: any) => {
-   const { noteId, likeAuthor } = action.payload;
-   return state.map((column: ColumnType) => {
-      const newNotesList = column.notes.map((note: NoteType) => {
-         if (note.id === noteId) {
-            let newLikesArray = [...note.likes];
-            if (!newLikesArray.includes(likeAuthor)) {
-               newLikesArray.push(likeAuthor);
-            } else {
-               newLikesArray = newLikesArray.filter(author => author !== likeAuthor);
-            }
-            return { ...note, likes: newLikesArray };
-         } else {
-            return note;
-         }
-      });
-      return { ...column, notes: newNotesList };
-   });
-};
-
-const editNoteContent = (state: ColumnType[], action: any) => {
-   const { columnId, noteId, content } = action.payload;
-   return state.map((column: ColumnType) => {
-      if (column.id === columnId) {
-         return {
-            ...column,
-            notes: column.notes.map((note: NoteType) => {
-               if (note.id === noteId && note.content !== content) {
-                  return { ...note, content };
-               }
-               return note;
-            })
-         };
+const addNoteWithinColumn = (state: IColumn[], action: IAddNoteAction) => {
+   const { columnID, id } = action.payload.note;
+   return state.map((column: IColumn) => {
+      if (column.id === columnID) {
+         return { ...column, notesByID: [...column.notesByID, id] }
       }
       return column;
    });
 };
 
-// const boardsReducer = createReducer(initialState, {
-//
-// });
+const deleteNoteWithinColumn = (state: IColumn[], action: IRemoveNoteAction) => {
+   const { columnID, noteID } = action.payload;
+   return state.map((column: IColumn) => {
+      if (column.id === columnID) {
+         const newNotes = column.notesByID.filter(note => note !== noteID);
+         return { ...column, notesByID: newNotes }
+      }
+      return column;
+   })
+}
+
+const reorderNotes = (state: IColumn[], action: IReorderNotes) => {
+   const { sourceIndex, destinationIndex, sourceID, destinationID } = action.payload;
+
+   const columnStart = state.find(column => column.id === sourceID);
+   if (!columnStart) return;
+   const newNotesList = [...columnStart.notesByID];
+   const [note] = newNotesList.splice(sourceIndex, 1);
+   return state.map((column: IColumn) => {
+          if (column.id === sourceID && sourceID === destinationID) {
+             // drag and drop note in same column
+             newNotesList.splice(destinationIndex, 0, note);
+             return { ...column, notesByID: newNotesList };
+          } else if (column.id === sourceID && sourceID !== destinationID) {
+             // drag and drop note between different columns
+             return { ...column, notesByID: newNotesList };
+          } else if (column.id === destinationID && sourceID !== destinationID) {
+             // drag and drop note between different columns
+             const destinationNotesList = [...column.notesByID];
+             destinationNotesList.splice(destinationIndex, 0, note);
+             return { ...column, notesByID: destinationNotesList };
+          }
+          return column;
+       }
+   )
+}
+
+// NOTES
+const loadNotes = (state: INote[], action: ILoadColumnsAndNotes) => {
+   const { notes } = action.payload;
+   return notes;
+}
+
+const addNewNote = (state: INote[], action: IAddNoteAction) => {
+   const { note } = action.payload;
+   return [...state, note];
+};
+
+const removeNote = (state: INote[], action: IRemoveNoteAction) => {
+   return state.filter((note: INote) => note.id !== action.payload.noteID);
+};
+
+const likeHandle = (state: INote[], action: IHandleLikeAction) => {
+   const { noteID, likeAuthor } = action.payload;
+   return state.map((note: INote) => {
+      if (note.id === noteID) {
+         let newLikesArray = [...note.likes];
+         if (!newLikesArray.includes(likeAuthor)) {
+            newLikesArray.push(likeAuthor);
+         } else {
+            newLikesArray = newLikesArray.filter(author => author !== likeAuthor);
+         }
+         return { ...note, likes: newLikesArray };
+      } else {
+         return note;
+      }
+   });
+};
+
+const editNoteContent = (state: INote[], action: IEditNoteContentAction) => {
+   const { noteID, content } = action.payload;
+   return state.map((note: INote) => {
+      if (note.id === noteID && note.content !== content) {
+         return { ...note, content: content };
+      }
+      return { ...note };
+   });
+};
+
+const removeNotesWithColumn = (state: INote[], action: IRemoveColumnAction) => {
+   const { notesIDs } = action.payload;
+   let newState = [...state];
+   notesIDs.forEach((noteID: string) => {
+      newState = state.filter((note: INote) => note.id !== noteID);
+   })
+   return newState;
+}
 
 
 const boardReducer = createReducer(initialState, {
    LOAD_BOARDS: loadBoards,
    REMOVE_BOARD: removeBoard,
    ADD_BOARD: addBoard,
-   LOAD_BOARD: loadBoard,
+   // LOAD_BOARD: loadBoard,
+   ADD_COLUMN: addColumnWithinBoard,
+   REMOVE_COLUMN: removeColumnWithinBoard,
+   REORDER_COLUMNS: reorderColumns
+});
+
+const columnsReducer = createReducer(initialState, {
+   LOAD_DATA: loadColumns,
    ADD_COLUMN: addNewColumn,
    REMOVE_COLUMN: removeColumn,
    EDIT_COLUMN_NAME: editColumnName,
-   DRAG_HAPPENED: dragHandle,
+   ADD_NOTE: addNoteWithinColumn,
+   REMOVE_NOTE: deleteNoteWithinColumn,
+   REORDER_NOTES: reorderNotes
+});
+
+const notesReducer = createReducer(initialState, {
+   LOAD_DATA: loadNotes,
    ADD_NOTE: addNewNote,
    REMOVE_NOTE: removeNote,
    EDIT_NOTE_CONTENT: editNoteContent,
-   HANDLE_LIKE: likeHandle
+   HANDLE_LIKE: likeHandle,
+   REMOVE_COLUMN: removeNotesWithColumn
 });
 
-export {boardReducer};
+export { boardReducer, columnsReducer, notesReducer };

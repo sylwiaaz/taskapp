@@ -1,188 +1,186 @@
-import { createBoard, getBoard, getBoards } from 'firebase/apiMethods';
-import { Board } from '../../interfaces/Board';
-
-
-//
-// export type EditColumnName = { type: string, payload: { columnId: string, columnName: string } };
-// export type RemoveColumn = { type: string, payload: { columnId: string } }
-// export type AddNote = { type: string, payload: { content: string, columnId: string } };
-// export type EditNoteContent = { type: string, payload: { columnId: string, noteId: string, content: string } };
-// export type HandleLike = { type: string, payload: { noteId: string, likeAuthor: string } };
-// export type RemoveNote = { type: string, payload: { noteId: string, columnId: string } }
+import { IBoard } from 'interfaces/board';
+import {
+   createBoard,
+   createColumn,
+   createNote,
+   deleteBoard,
+   deleteColumn,
+   deleteNote,
+   editColumn,
+   editNoteText,
+   getBoards,
+   getColumnsAndNotes,
+   handleLikeInNote,
+   updateColumnsOrder,
+   updateNotesOrder
+} from 'firebase/apiMethods';
+import { AppDispatch, AppThunk } from '../index';
 
 
 // BOARD ACTIONS
-
-export const loadBoards = (id: string, authorID: string) => {
-   return (dispatch: any) => {
-      getBoards(authorID).then((boards: Board[]) => {
-         dispatch({
-            type: 'LOAD_BOARDS',
-            payload: { boards }
-         });
+export const loadBoards = (authorID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      const boards: IBoard[] = await getBoards(authorID);
+      dispatch({
+         type: 'LOAD_BOARDS',
+         payload: { boards }
       });
    };
 };
 
+// export const loadBoard = (id: string): AppThunk => {
+//     return async (dispatch: AppDispatch) => {
+//         const board = await getBoard(id);
+//         dispatch({
+//             type: 'LOAD_BOARD',
+//             payload: { board }
+//         });
+//     };
+// };
 
-export const loadBoard = (id: string) => {
-   return (dispatch: any) => {
-      return getBoard(id)
-         .then((board: any) => {
-            console.log(board);
-            dispatch({
-               type: 'LOAD_BOARD',
-               payload: { board }
-            });
-         }).catch((err: any) => {
-            throw(err);
-         });
+export const addBoard = (authorID: string, boardTitle: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      const board = await createBoard(authorID, boardTitle);
+      dispatch({
+         type: 'ADD_BOARD',
+         payload: { boardTitle, authorID, id: board.id, columnsByID: [] }
+      });
    };
 };
 
+export const removeBoard = (boardID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await deleteBoard(boardID);
+      dispatch({
+         type: 'REMOVE_BOARD',
+         payload: { boardID }
+      });
+   }
+}
 
-export const addBoard = (boardTitle: string) => {
-   return (dispatch: any) => {
-      return createBoard(boardTitle)
-         .then((board: any) => {
-            console.log(board);
-            dispatch({
-               type: 'ADD_BOARD',
-               payload: { boardTitle }
-            });
-         }).catch((error: any) => {
-            console.log(error);
-         });
-   };
-};
-
-export const reorderColumns = (columnId: string, sourceID: number, sourceIndex: number, destinationIndex: number) => {
-   return (dispatch: any) => {
+export const reorderColumns = (boardID: string, sourceIndex: number, destinationIndex: number): AppThunk => {
+   return async (dispatch: AppDispatch) => {
       dispatch({
          type: 'REORDER_COLUMNS',
-         payload: { sourceID, sourceIndex, destinationIndex }
+         payload: { boardID, sourceIndex, destinationIndex }
       });
+      await updateColumnsOrder(boardID, sourceIndex, destinationIndex);
    };
 };
 
-// export const updateBoard = (id: string, content: any, cb: any, ...rest: any) => {
-//    return function (dispatch: any) {
-//       return setBoard(id, content)
-//          .then((data: any) => {
-//             console.log(data);
-//             dispatch(cb(...rest));
-//          }).catch((error: any) => {
-//             throw(error);
-//          });
-//    };
-// };
+export const loadColumnsAndNotes = (boardID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      const data = await getColumnsAndNotes(['columns', 'notes'], boardID);
+      const [columns, notes] = data;
+      dispatch({
+         type: 'LOAD_DATA',
+         payload: { columns, notes }
+      });
+   }
+}
 
 
 // COLUMN ACTIONS
 
-export const addColumn = (name: string, boardId: string) => {
-   return (dispatch: any) => {
-      const id = 'id';
+// export const loadColumns = (authorID: string, boardID: string): AppThunk => {
+//     return async (dispatch: AppDispatch) => {
+//         const columns = await getColumns(authorID, boardID);
+//             dispatch({
+//                 type: 'LOAD_DATA',
+//                 payload: { columns }
+//             });
+//     };
+// };
+
+export const addColumn = (authorID: string, name: string, boardID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      const column = await createColumn(authorID, name, boardID);
       dispatch({
          type: 'ADD_COLUMN',
-         payload: { name, id, boardId }
+         payload: { column: { name, id: column.id, boardID, notesByID: [] } }
       });
    };
 };
 
-export const editColumnName = (columnId: string, columnName: string, boardId: string) => {
-   return (dispatch: any) => {
+export const editColumnName = (columnID: string, columnName: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await editColumn(columnName, columnID)
       dispatch({
          type: 'EDIT_COLUMN_NAME',
-         payload: { columnId, columnName }
+         payload: { columnID, columnName }
       });
    };
 };
 
-export const removeColumn = (columnId: string, boardId: string) => {
-   return (dispatch: any) => {
+export const removeColumn = (columnID: string, boardID: string, notesIDs: string[]): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await deleteColumn(columnID, boardID, notesIDs);
       dispatch({
          type: 'REMOVE_COLUMN',
-         payload: { columnId, boardId }
+         payload: { columnID, boardID, notesIDs }
       });
    };
 };
 
-
-export const reorderColumn = (noteId: string, columnId: string, sourceID: number, sourceIndex: number, destinationId: string, destinationIndex: number, boardId: string) => {
-   return (dispatch: any) => {
+export const reorderNotes = (boardID: string, noteID: string, sourceID: string, sourceIndex: number, destinationID: string, destinationIndex: number): AppThunk => {
+   return async (dispatch: AppDispatch) => {
       dispatch({
-         type: 'REORDER_COLUMN',
-         payload: { sourceID, sourceIndex, destinationId, destinationIndex }
+         type: 'REORDER_NOTES',
+         payload: { sourceIndex, destinationIndex, sourceID, destinationID }
       });
+      await updateNotesOrder(boardID, noteID, sourceID, destinationID, sourceIndex, destinationIndex);
    };
 };
 
 
 // NOTE ACTIONS
-export const addNote = (content: string, columnId: string, boardId: string) => {
-   return (dispatch: any) => {
-      const noteId = 'id';
+
+// export const loadNotes = (authorID: string, boardID: string): AppThunk => {
+//     return async (dispatch: AppDispatch) => {
+//         const notes = await getNotes(authorID, boardID);
+//             dispatch({
+//                 type: 'LOAD_DATA',
+//                 payload: { notes }
+//             });
+//     };
+// };
+
+export const addNote = (authorID: string, content: string, columnID: string, boardID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      const note = await createNote(authorID, content, columnID, boardID)
       dispatch({
          type: 'ADD_NOTE',
-         payload: { content, columnId, noteId }
+         payload: { note: { content, columnID, id: note.id, likes: [], boardID } }
       });
    };
 };
 
-export const editNoteContent = (columnId: string, noteId: string, content: string, boardId: string) => {
-   return (dispatch: any) => {
+export const editNoteContent = (noteID: string, content: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await editNoteText(noteID, content)
       dispatch({
          type: 'EDIT_NOTE_CONTENT',
-         payload: { columnId, noteId, content }
+         payload: { noteID, content }
       });
    };
 };
 
-export const removeNote = (noteId: string, columnId: string, boardId: string) => {
-   return (dispatch: any) => {
+export const removeNote = (noteID: string, columnID: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await deleteNote(noteID, columnID)
       dispatch({
          type: 'REMOVE_NOTE',
-         payload: { noteId, columnId }
+         payload: { noteID, columnID }
       });
    };
 };
 
-export const handleLike = (noteId: string, likeAuthor: string) => {
-   return {
-      type: 'HANDLE_LIKE',
-      payload: { noteId, likeAuthor }
-   };
-};
-// sort action
-export type SortType = {
-   type: string, payload: {
-      droppableIdStart: string,
-      droppableIdEnd: string,
-      droppableIndexStart: number,
-      droppableIndexEnd: number,
-      draggableId: string,
-      type: string
-   }
-}
-
-export const sort = (droppableIdStart: string,
-                     droppableIdEnd: string,
-                     droppableIndexStart: number,
-                     droppableIndexEnd: number,
-                     draggableId: string,
-                     type: string) => {
-   return (dispatch: any) => {
+export const handleLike = (noteID: string, likeAuthor: string): AppThunk => {
+   return async (dispatch: AppDispatch) => {
+      await handleLikeInNote(noteID, likeAuthor);
       dispatch({
-         type: 'DRAG_HAPPENED',
-         payload: {
-            droppableIdStart,
-            droppableIdEnd,
-            droppableIndexStart,
-            droppableIndexEnd,
-            draggableId,
-            type
-         }
-      });
-   };
+         type: 'HANDLE_LIKE',
+         payload: { noteID, likeAuthor }
+      })
+   }
 };
