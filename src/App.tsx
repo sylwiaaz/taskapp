@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import './App.scss';
 import { useSelector } from 'react-redux';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { HashRouter, Switch } from 'react-router-dom';
 import AuthIsLoaded from './components/AuthIsLoaded/AuthIsLoaded';
 import Layout from './components/Layout/Layout';
 import PublicRoute from './components/Routes/PublicRoute';
@@ -20,7 +20,7 @@ export const App: FunctionComponent = (): JSX.Element => {
 
    return (
        <div className="App">
-          <BrowserRouter basename={'/taskapp'}>
+          <HashRouter basename='/taskapp'>
              <AuthIsLoaded>
                 <Layout>
                    <Switch>
@@ -31,7 +31,7 @@ export const App: FunctionComponent = (): JSX.Element => {
                    </Switch>
                 </Layout>
              </AuthIsLoaded>
-          </BrowserRouter>
+          </HashRouter>
        </div>
    );
 };
