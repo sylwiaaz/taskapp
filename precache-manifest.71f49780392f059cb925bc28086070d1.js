@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "b98f037b3a36ef792b6ef1f5a1bbb431",
+    "revision": "bb9a42308626a07322dd91722790d145",
     "url": "/taskapp/index.html"
   },
   {
