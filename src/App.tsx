@@ -20,7 +20,7 @@ export const App: FunctionComponent = (): JSX.Element => {
 
    return (
        <div className="App">
-          <BrowserRouter>
+          <BrowserRouter basename={'/taskapp'}>
              <AuthIsLoaded>
                 <Layout>
                    <Switch>
